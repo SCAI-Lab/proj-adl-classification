@@ -29,6 +29,8 @@ def calculate_spectral_centroid(freqs, magnitudes, order=1):
             
         Reference:
         ---------
+            - Kulkarni, N., & Bairagi, V. (2018). Use of Complexity Features for Diagnosis of Alzheimer Disease. EEG-Based Diagnosis 
+            of Alzheimer Disease, 47–59. https://doi.org/10.1016/B978-0-12-815392-5.00004-6
             - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
             TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
@@ -38,7 +40,7 @@ def calculate_spectral_centroid(freqs, magnitudes, order=1):
 
 def calculate_spectral_variance(freqs, magnitudes):
         """
-        Calculates the spectral variance (also known as spectral spread) of the given spectrum.
+        Calculates the spectral variance (one form of spectral spread) of the given spectrum.
 
         The spectral variance is a measure of the spread of the spectrum around its centroid.
         It quantifies how much the frequencies in the spectrum deviate from the spectral centroid.
@@ -53,7 +55,7 @@ def calculate_spectral_variance(freqs, magnitudes):
         Returns:
         -------
         numpy.array
-            An array containing the calculated spectral variance. The array is of length 1 for consistency in return type.
+            An array containing the calculated spectral variance.
         
         Reference:
         ---------
@@ -63,6 +65,35 @@ def calculate_spectral_variance(freqs, magnitudes):
         mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
         spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
         return np.array([spectral_variance])
+    
+# def calculate_spectral_standard_deviation(freqs, magnitudes):
+#     """
+#     Calculates the spectral standard deviation of the given spectrum. This is another form of spectral spread.
+    
+#     It is a measure of the spread of the spectrum around its centroid.It quantifies how much the frequencies in the spectrum deviate 
+#     from the spectral centroid.
+    
+#     Parameters:
+#         ----------
+#         freqs : numpy.array
+#             An array of frequencies corresponding to the spectrum bins.
+#         magnitudes : numpy.array
+#             An array of magnitude values of the spectrum at the corresponding frequencies.
+
+#         Returns:
+#         -------
+#         numpy.array
+#             An array containing the calculated spectral standard deviation.
+    
+#     Reference:
+#     ----------
+#         - Giannakopoulos, T., & Pikrakis, A. (2014). Audio Features. Introduction to Audio Analysis, 
+#         59–103. https://doi.org/10.1016/B978-0-08-099388-1.00004-2
+    
+#     """
+#     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
+#     spectral_standard_deviation = np.sqrt(np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes))
+#     return np.array([spectral_standard_deviation])
 
 def calculate_spectral_skewness(freqs, magnitudes):
         """
@@ -116,6 +147,8 @@ def calculate_spectral_kurtosis(freqs, magnitudes):
         
         Reference:
         ---------
+            - Antoni, J. (2006). The spectral kurtosis: a useful tool for characterising non-stationary signals. Mechanical Systems 
+            and Signal Processing, 20(2), 282–307. https://doi.org/10.1016/J.YMSSP.2004.09.001
             - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
             TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
@@ -155,8 +188,9 @@ def calculate_spectral_flatness(magnitudes):
         """
         Calculate the spectral flatness of a given spectrum.
 
-        Spectral flatness quantifies how flat or peaky a spectrum is, indicating how noise-like or tonal a signal is.
+        Spectral flatness measures the uniformity of signal energy in the frequency domain.
         It is often used to distinguish between noise and tonal signals. It can also be referred to as Wiener's entropy.
+        The spectral flatness is defined as the geometric mean of the FT of a signal normalized by its arithmetic mean
 
         Parameters:
         ----------
@@ -170,7 +204,9 @@ def calculate_spectral_flatness(magnitudes):
 
         Reference:
         --------
-            Sayeed et al., 2016, https://doi.org/10.1016/B978-0-12-398499-9.00012-1
+            - Sayeed, A. M., Papandreou-Suppappola, A., Suppappola, S. B., Xia, X. G., Hlawatsch, F., Matz, G., Boashash, B., 
+            Azemi, G., & Khan, N. A. (2016). Detection, Classification, and Estimation in the (t,f) Domain. Time-Frequency 
+            Signal Analysis and Processing: A Comprehensive Reference, 693–743. https://doi.org/10.1016/B978-0-12-398499-9.00012-1
         """
         spectral_flatness = np.exp(np.mean(np.log(magnitudes))) / np.mean(magnitudes)
         return np.array([spectral_flatness])
@@ -224,7 +260,7 @@ def calculate_spectral_slope_linear(freqs, magnitudes):
             
         Reference:
         ---------
-            Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
             TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
         slope = np.polyfit(freqs, magnitudes, 1)[0]
@@ -248,8 +284,16 @@ def calculate_peak_frequencies(freqs, psd, n_dom_freqs):
         
         Reference:
         ---------
-            Murthy et al., 1971, https://doi.org/10.1016/0025-5564(71)90072-1
+            - Murthy, V. K., Julian Haywood, L., Richardson, J., Kalaba, R., Salzberg, S., Harvey, G., 
+            & Vereeke, D. (1971). Analysis of power spectral densities of electrocardiograms. Mathematical 
+            Biosciences, 12(1–2), 41–51. https://doi.org/10.1016/0025-5564(71)90072-1
         """
+            # Validate inputs
+        if n_dom_freqs <= 0:
+            raise ValueError("n_dom_freqs must be greater than 0.")
+        if n_dom_freqs > len(psd):
+            raise ValueError(f"n_dom_freqs ({n_dom_freqs}) cannot exceed the length of the PSD array ({len(psd)}).")
+    
         peak_frequencies = freqs[np.argsort(psd)[-n_dom_freqs:][::-1]]
         return np.array(peak_frequencies)
 
@@ -276,7 +320,9 @@ def calculate_spectral_edge_frequency(freqs, psd, cumulative_power_thresholds):
         
         Reference:
         ---------
-            Drummond et al., 1991, https://doi.org/10.1111/j.1399-6576.1991.tb03374.x   
+            - Drummond, J. C., Brann, C. A., Perkins, D. E., & Wolfe, D. E. (1991). A comparison of median frequency, 
+            spectral edge frequency, a frequency band power ratio, total power, and dominance shift in the determination of 
+            depth of anesthesia [Article]. Acta Anaesthesiologica Scandinavica., 35(8), 693–699. https://doi.org/10.1111/j.1399-6576.1991.tb03374.x
         """
         # A special case would be roll-off frequency (threshold = .85)
         feats = []
@@ -304,7 +350,8 @@ def calculate_band_power(freqs, psd, f_bands):
 
         Reference:
         ---------
-            https://www.mathworks.com/help/signal/ref/bandpower.html
+            - https://www.mathworks.com/help/signal/ref/bandpower.html
+            - https://raphaelvallat.com/bandpower.html
         """
         # The features array for storing the total power, band absolute powers, and band relative powers
         feats = []
@@ -347,7 +394,11 @@ def calculate_spectral_entropy(psd):
             
         Reference:
         ---------
-            Barandas et al., 2020, https://doi.org/10.1016/j.softx.2020.100456
+            - Inouye, T., Shinosaki, K., Sakamoto, H., Toi, S., Ukai, S., Iyama, A., Katsuda, Y., & Hirano, M. (1991). Quantification
+            of EEG irregularity by use of the entropy of the power spectrum. Electroencephalography and Clinical Neurophysiology, 79(3),
+            204–210. https://doi.org/10.1016/0013-4694(91)90138-T
+            - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, H. (2020). 
+            TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
         try:
             # Formula from Matlab doc
@@ -378,7 +429,10 @@ def calculate_spectral_contrast(freqs, psd, f_bands):
             An array containing the spectral contrast values for each specified frequency band.
 
         Reference:
-            McFee et al., 2024, https://zenodo.org/badge/latestdoi/6309729
+        ----------
+            - Music type classification by spectral contrast feature. (n.d.). Retrieved September 16,
+            2024, from https://www.researchgate.net/publication/313484983_Music_type_classification_by_spectral_contrast_feature
+            - McFee et al., 2024, https://zenodo.org/badge/latestdoi/6309729
         """
         feats = []
         for f_band in f_bands:
@@ -410,7 +464,7 @@ def calculate_spectral_bandwidth(freqs, magnitudes, order):
             An array of magnitude values of the spectrum at the corresponding frequencies.
 
         order : int
-        The order of the spectral bandwidth calculation. The orderdefines the type of 
+        The order of the spectral bandwidth calculation. The order defines the type of 
         deviation being measured:
         - 1 for spectral mean deviation.
         - 2 for spectral standard deviation.
@@ -424,6 +478,8 @@ def calculate_spectral_bandwidth(freqs, magnitudes, order):
         References:
         -----------
             - Librosa Library Documentation: https://zenodo.org/badge/latestdoi/6309729
+            - Giannakopoulos, T., & Pikrakis, A. (2014). Audio Features. Introduction to Audio Analysis, 
+            59–103. https://doi.org/10.1016/B978-0-08-099388-1.00004-2
         """
         normalized_magnitudes = magnitudes / np.sum(magnitudes)
         mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
@@ -502,56 +558,236 @@ def calculate_spectral_cov(freqs, magnitudes):
         return coefficient_of_variation
 
 def calculate_spectral_flux(magnitudes, order=2):
-        # https://doi.org/10.1016/B978-0-08-099388-1.00004-2
-        spectral_flux = (np.sum(np.abs(np.diff(magnitudes)) ** order)) ** (1 / order)
-        return np.array([spectral_flux])
+    """
+    Calculates the flux of the spectrum.
+    
+    Spectral flux is a measure of the variability of the spectrum over time.
+    
+    Parameters:
+    -----------
+    magnitudes : array-like
+        The magnitude values of the spectrum corresponding to each frequency bin. 
+        This is a 1D array representing the magnitude of the signal at each frequency.
+        
+    Returns:
+    --------
+    float
+        The spectral flux of the spectrum
+    
+    Reference:
+    ----------
+        - Wang, W., Yu, X., Wang, Y. H., & Swaminathan, R. (2012). Audio fingerprint based on spectral flux 
+        for audio retrieval. ICALIP 2012 - 2012 International Conference on Audio, Language and Image Processing, 
+        Proceedings, 1104–1107. https://doi.org/10.1109/ICALIP.2012.6376781
+    """
+    spectral_flux = (np.sum(np.abs(np.diff(magnitudes)) ** order)) ** (1 / order)
+    return np.array([spectral_flux])
     
 def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85):
-        # https://doi.org/10.1016/j.softx.2020.100456
-        cumulative_magnitudes = np.cumsum(magnitudes)
-        rolloff_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
-        return np.array([rolloff_frequency])
+    """
+    Calculate the spectral rolloff point of a signal.
+
+    The spectral rolloff is the frequency below which a specified percentage 
+    (default is 85%) of the total spectral energy is contained.
+
+    Parameters:
+    -----------
+    freqs : numpy.ndarray
+        Array of frequencies corresponding to the frequency components of the signal.
+    magnitudes : numpy.ndarray
+        Array of magnitudes (or power) corresponding to the frequencies.
+    roll_percent : float, optional
+        The percentage of total spectral energy below the rolloff point. Default is 0.85 (85%).
+
+    Returns:
+    --------
+    numpy.ndarray
+        The frequency at which the spectral rolloff occurs.
+
+    References:
+    -----------
+        - Giannakopoulos, T., & Pikrakis, A. (2014). Audio Features. Introduction to Audio Analysis, 
+        59–103. https://doi.org/10.1016/B978-0-08-099388-1.00004-2
+    """
+    cumulative_magnitudes = np.cumsum(magnitudes)
+    rolloff_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
+    return np.array([rolloff_frequency])
 
 def calculate_harmonic_ratio(signal):
-        # https://www.mathworks.com/help/audio/ref/harmonicratio.html
-        harmonic_ratio = librosa.effects.harmonic(signal).mean()
-        return np.array([harmonic_ratio])
+    """
+    Calculate the harmonic ratio of a given signal.
+
+    The harmonic ratio is a measure of the amount of harmonic content in the signal 
+    compared to the total energy of the signal. It is typically used in audio analysis 
+    to quantify how much of the signal consists of harmonic components.
+
+    Parameters:
+    -----------
+    signal : numpy.ndarray
+        The input audio signal as a 1D numpy array.
+
+    Returns:
+    --------
+    numpy.ndarray
+        The harmonic ratio of the signal as a 1D numpy array.
+
+    References:
+    -----------
+        This function is based on the harmonic ratio calculation methodology as described in:
+        https://www.mathworks.com/help/audio/ref/harmonicratio.html
+    """
+    harmonic_ratio = librosa.effects.harmonic(signal).mean()
+    return np.array([harmonic_ratio])
 
 def calculate_fundamental_frequency(signal):
-        # https://doi.org/10.1121%2F1.4740482
-        f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-        return np.array([np.mean(f0)])
+    """
+    Calculate the fundamental frequency (F0) of a given audio signal.
+
+    The fundamental frequency, often referred to as F0, is the lowest frequency 
+    of a periodic waveform, corresponding to the perceived pitch of the sound.
+    This function uses the YIN algorithm to estimate the fundamental frequency.
+
+    Parameters:
+    -----------
+    signal : numpy.ndarray
+        The input audio signal as a 1D numpy array.
+
+    Returns:
+    --------
+    numpy.ndarray
+        The average fundamental frequency (F0) of the signal as a 1D numpy array.
+        
+    Reference:
+    ----------
+        - Hee Lee, J., & Humes, L. E. (2012). Effect of fundamental-frequency and sentence-onset 
+        differences on speech-identification performance of young and older adults in a competing-talker background. 
+        The Journal of the Acoustical Society of America, 132(3), 1700–1717. https://doi.org/10.1121/1.4740482
+
+    """
+    f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
+    return np.array([np.mean(f0)])
 
 def calculate_spectral_crest_factor(magnitudes):
-        # https://www.mathworks.com/help/signal/ref/spectralcrest.html#d126e220002
-        crest_factor = np.max(magnitudes) / np.mean(magnitudes)
-        return np.array([crest_factor])
+    """
+    Calculate the spectral crest factor of a signal's magnitude spectrum.
+
+    The spectral crest factor is a measure of how peaky the spectrum is. It is defined as the ratio 
+    of the maximum value of the magnitude spectrum to the mean value of the magnitude spectrum.
+
+    Parameters:
+    -----------
+    magnitudes : numpy.ndarray
+        Array of magnitudes (or power) corresponding to the frequencies in the signal's spectrum.
+
+    Returns:
+    --------
+    numpy.ndarray
+        The spectral crest factor of the signal as a 1D numpy array.
+
+    References:
+    -----------
+        The spectral crest factor computation follows the description from:
+        https://www.mathworks.com/help/signal/ref/spectralcrest.html#d126e220002
+    """
+    crest_factor = np.max(magnitudes) / np.mean(magnitudes)
+    return np.array([crest_factor])
 
 def calculate_spectral_decrease(freqs, magnitudes):
-        # https://doi.org/10.1016/j.softx.2020.100456
-        k = np.arange(1, len(magnitudes) + 1)
-        spectral_decrease = np.sum((magnitudes[1:] - magnitudes[0]) / k[1:])
-        return np.array([spectral_decrease])
+    """
+    Calculate the spectral decrease of a signal.
+
+    Spectral decrease is a measure of the amount of energy reduction or attenuation 
+    in the spectrum as the frequency increases. It is calculated as the weighted sum 
+    of the differences between the spectral magnitudes and the first magnitude value, 
+    normalized by the bin index.
+
+    Parameters:
+    -----------
+    freqs : numpy.ndarray
+        Array of frequencies corresponding to the frequency components of the signal.
+    magnitudes : numpy.ndarray
+        Array of magnitudes corresponding to the frequencies in the signal's spectrum.
+
+    Returns:
+    --------
+    numpy.ndarray
+        The spectral decrease value of the signal as a 1D numpy array.
+
+    References:
+    -----------
+        - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, 
+        H. (2020). TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
+    """
+    k = np.arange(1, len(magnitudes) + 1)
+    spectral_decrease = np.sum((magnitudes[1:] - magnitudes[0]) / k[1:])
+    return np.array([spectral_decrease])
+
 
 def calculate_spectral_irregularity(magnitudes):
-        # https://docs.twoears.eu/en/latest/afe/available-processors/spectral-features/
-        # https://doi.org/10.1109/ICASSP.2004.1325955
-        irregularity = np.sum(np.abs(magnitudes[1:] - magnitudes[:-1])) / (len(magnitudes) - 1)
-        return np.array([irregularity])
+    """
+    Calculate the spectral irregularity of a signal's magnitude spectrum.
 
-def calculate_mean_frequency(freqs, magnitudes):
-        # https://www.mathworks.com/help/signal/ref/meanfreq.html
-        mean_freq = np.sum(freqs * magnitudes) / np.sum(magnitudes)
-        return np.array([mean_freq])
+    Spectral irregularity measures the degree of fluctuation between consecutive 
+    magnitudes in the spectrum, indicating how smooth or rough the spectrum is.
 
-def calculate_frequency_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95)):
-        # https://doi.org/10.1007/978-94-010-0231-8_13
-        sorted_indices = np.argsort(magnitudes)
-        lower_limit = int(limits[0] * len(magnitudes))
-        upper_limit = int(limits[1] * len(magnitudes))
-        trimmed_indices = sorted_indices[lower_limit:upper_limit]
-        winsorized_mean = np.mean(freqs[trimmed_indices])
-        return np.array([winsorized_mean])
+    Parameters:
+    -----------
+    magnitudes : numpy.ndarray
+        Array of magnitudes corresponding to the frequencies in the signal's spectrum.
+
+    Returns:
+    --------
+    float
+        The spectral irregularity value.
+        
+    Reference:
+    ----------
+        - Spectral features (spectralFeaturesProc.m) — The Two!Ears Auditory Model <unknown> documentation. (n.d.). 
+        Retrieved September 17, 2024, from https://docs.twoears.eu/en/latest/afe/available-processors/spectral-features/
+        - 
+    """
+    irregularity = np.sum(np.abs(magnitudes[1:] - magnitudes[:-1])) / (len(magnitudes) - 1)
+    return np.array([irregularity])
+
+def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95)):
+    """
+    Calculate the winsorized mean of frequencies, trimming the magnitude values at the specified limits.
+    
+    Parameters:
+    -----------
+    freqs : np.ndarray
+        Array of frequency values corresponding to the magnitudes.
+    magnitudes : np.ndarray
+        Array of magnitude values corresponding to the frequencies.
+    limits : tuple, optional
+        A tuple specifying the lower and upper percentage of magnitudes to be trimmed 
+        (default is (0.05, 0.95), meaning the lowest and highest 5% are excluded).
+    
+    Returns:
+    --------
+    np.ndarray
+        A numpy array containing the winsorized mean of the trimmed frequency values.    
+        
+    Reference:
+    ----------
+        - Onoz, B., & Oguz, B. (2003). Assessment of Outliers in Statistical Data Analysis. Integrated Technologies for 
+        Environmental Monitoring and Information Production, 173–180. https://doi.org/10.1007/978-94-010-0231-8_13
+    """
+    # Ensure magnitudes and freqs are numpy arrays
+    freqs = np.asarray(freqs)
+    magnitudes = np.asarray(magnitudes)
+
+    sorted_indices = np.argsort(magnitudes)
+    
+    # Calculate the lower and upper limits for trimming
+    lower_limit = int(limits[0] * len(magnitudes))
+    upper_limit = int(limits[1] * len(magnitudes))
+    # Select the trimmed indices
+    trimmed_indices = sorted_indices[lower_limit:upper_limit]
+    winsorized_mean = np.mean(freqs[trimmed_indices])
+    
+    return np.array([winsorized_mean])
+
 
 def calculate_total_harmonic_distortion(signal, fs, harmonics=5):
         # 10.1109/TCOMM.2011.061511.100749
@@ -660,25 +896,92 @@ def calculate_spectral_noise_to_harmonics_ratio(signal):
     #     even_to_odd_ratio = even_energy / odd_energy
     #     return np.array([even_to_odd_ratio])
 
-def calculate_spectral_strongest_frequency_phase(freqs, spectrum):
-        # https://mriquestions.com/phase-v-frequency.html
-        strongest_frequency_index = np.argmax(np.abs(spectrum))
-        phase = np.angle(spectrum[strongest_frequency_index])
-        return np.array([phase])
+def calculate_spectral_strongest_frequency_phase(spectrum):
+    """
+    Calculates the phase of the strongest frequency component in a given spectrum.
+
+    This function identifies the frequency with the highest magnitude in the provided
+    frequency spectrum and returns the phase angle associated with that frequency.
+
+    Parameters
+    ----------
+    spectrum : array_like
+        A complex-valued array representing the frequency spectrum, where each element
+        contains the magnitude and phase of the corresponding frequency component.
+    
+    Returns
+    -------
+    numpy.ndarray
+        A single-element array containing the phase (in radians) of the strongest frequency component.
+    
+    Reference:
+    ----------
+        - https://mriquestions.com/phase-v-frequency.html
+    """
+    strongest_frequency_index = np.argmax(np.abs(spectrum))
+    phase = np.angle(spectrum[strongest_frequency_index])
+    return np.array([phase])
 
 def calculate_spectral_frequency_below_peak(freqs, magnitudes):
-        # https://doi.org/10.1016/B978-012437552-9/50003-9
-        peak_index = np.argmax(magnitudes)
-        frequency_below_peak = freqs[max(0, peak_index - 1)]
-        return np.array([frequency_below_peak])
+    """
+    Calculates the frequency just below the peak frequency in a spectrum.
+
+    This function identifies the frequency component with the highest magnitude
+    and returns the frequency immediately below that peak.
+
+    Parameters
+    ----------
+    freqs : array_like
+        A 1D array representing the frequency components of the spectrum.
+    magnitudes : array_like
+        A 1D array representing the magnitudes corresponding to each frequency component.
+    
+    Returns
+    -------
+    numpy.ndarray
+        A single-element array containing the frequency just below the peak frequency.
+        If the peak is at the first frequency, returns the first frequency itself.
+    
+    Reference:
+    ----------
+        - Sörnmo, L., & Laguna, P. (2005). EEG Signal Processing. Bioelectrical Signal Processing in Cardiac 
+        and Neurological Applications, 55–179. https://doi.org/10.1016/B978-012437552-9/50003-9    
+    """
+    peak_index = np.argmax(magnitudes)
+    frequency_below_peak = freqs[max(0, peak_index - 1)]
+    return np.array([frequency_below_peak])
+
 
 def calculate_spectral_frequency_above_peak(freqs, magnitudes):
-        # https://doi.org/10.1016/B978-012437552-9/50003-9
-        peak_index = np.argmax(magnitudes)
-        frequency_above_peak = freqs[min(len(freqs) - 1, peak_index + 1)]
-        return np.array([frequency_above_peak])
+    """
+    Calculates the frequency just above the peak frequency in a spectrum.
 
-def calculate_spectral_cumulative_frequency(freqs, magnitudes, threshold):
+    This function identifies the frequency component with the highest magnitude
+    and returns the frequency immediately above that peak.
+
+    Parameters
+    ----------
+    freqs : array_like
+        A 1D array representing the frequency components of the spectrum.
+    magnitudes : array_like
+        A 1D array representing the magnitudes corresponding to each frequency component.
+    
+    Returns
+    -------
+    numpy.ndarray
+        A single-element array containing the frequency just above the peak frequency.
+        If the peak is at the last frequency, returns the last frequency itself.
+    
+    Reference:
+    ----------
+        - Sörnmo, L., & Laguna, P. (2005). EEG Signal Processing. Bioelectrical Signal Processing in Cardiac 
+        and Neurological Applications, 55–179. https://doi.org/10.1016/B978-012437552-9/50003-9    
+    """
+    peak_index = np.argmax(magnitudes)
+    frequency_above_peak = freqs[min(len(freqs) - 1, peak_index + 1)]
+    return np.array([frequency_above_peak])
+
+def calculate_spectral_cumulative_frequency(freqs, magnitudes, threshold): 
         # https://doi.org/10.48550/arXiv.0901.3708
         cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
         frequency = freqs[np.where(cumulative_power >= threshold)[0][0]]
@@ -690,20 +993,27 @@ def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, threshold):
         frequency = freqs[np.where(cumulative_power <= threshold)[-1][-1]]
         return np.array([frequency])
 
-def calculate_spectral_spread_shift(freqs, magnitudes):
-        # https://docs.twoears.eu/en/latest/afe/available-processors/spectral-features/
-        mean_frequency = np.sum(freqs * magnitudes) / np.sum(magnitudes)
-        spread = np.sqrt(np.sum((freqs - mean_frequency) ** 2 * magnitudes) / np.sum(magnitudes))
-        return np.array([spread])
-
-def calculate_spectral_entropy_shift(magnitudes):
-        # https://doi.org/10.3390/buildings12030310
-        psd_norm = magnitudes / np.sum(magnitudes)
-        entropy = -np.sum(psd_norm * np.log2(psd_norm))
-        return np.array([entropy])
-
 def calculate_spectral_change_vector_magnitude(magnitudes):
-        # https://doi.org/10.3390/rs3112473
+        """
+        Calculate the magnitude of the spectral change vector 
+        based on consecutive differences in magnitudes.
+    
+        Parameters
+        ----------
+        magnitudes : array_like
+            A 1D array representing the magnitudes corresponding to each frequency component.
+        
+        Returns
+        -------
+        numpy.ndarray
+            An array containing the spectral change vector magnitude.
+            
+        Reference:
+        ----------
+            - Carvalho Júnior, O. A., Guimarães, R. F., Gillespie, A. R., Silva, N. C., & Gomes, R. A. T. (2011). 
+            A New Approach to Change Vector Analysis Using Distance and Similarity Measures. Remote Sensing 2011, 
+            Vol. 3, Pages 2473-2493, 3(11), 2473–2493. https://doi.org/10.3390/RS3112473
+        """
         change_vector_magnitude = np.linalg.norm(np.diff(magnitudes))
         return np.array([change_vector_magnitude])
 
@@ -718,108 +1028,313 @@ def calculate_spectral_mid_frequency_content(freqs, magnitudes, mid_freq_range=(
         return np.array([mid_freq_content])
 
 def calculate_spectral_peak_to_valley_ratio(magnitudes):
-        # https://doi.org/10.3389/fpsyg.2022.994047
-        # https://openlab.help.agilent.com/en/index.htm#t=mergedProjects/DataAnalysis/27021601168830603.htm
-        peaks, _ = find_peaks(magnitudes)
-        valleys, _ = find_peaks(-magnitudes)
-        if len(peaks) == 0 or len(valleys) == 0:
-            return np.array([np.nan])
-        peak_to_valley_ratio = np.max(magnitudes[peaks]) / np.min(magnitudes[valleys])
-        return np.array([peak_to_valley_ratio])
+    """
+    Calculate the spectral peak-to-valley ratio from a given array of magnitudes.
+
+    The peak-to-valley ratio is defined as the ratio of the maximum peak magnitude 
+    to the minimum valley magnitude in the given signal spectrum. Peaks are local 
+    maxima, and valleys are local minima of the magnitude spectrum. 
+
+    Parameters
+    ----------
+    magnitudes : array_like
+            A 1D array representing the magnitudes corresponding to each frequency component.
+
+    Returns
+    -------
+    np.array
+        A single-element array containing the peak-to-valley ratio. If no peaks 
+        or valleys are found, returns an array with NaN to indicate invalid output.
+
+    References
+    ----------
+        - Biberger, T., & Ewert, S. D. (2022). Binaural detection thresholds and 
+        audio quality of speech and music signals in complex acoustic environments. 
+        Frontiers in Psychology, 13, 994047. https://doi.org/10.3389/FPSYG.2022.994047/BIBTEX
+        - https://openlab.help.agilent.com/en/index.htm#t=mergedProjects/DataAnalysis/27021601168830603.htm
+    """
+    peaks, _ = find_peaks(magnitudes)
+    valleys, _ = find_peaks(-magnitudes)
+    if len(peaks) == 0 or len(valleys) == 0:
+        return np.array([np.nan])
+    
+    peak_to_valley_ratio = np.max(magnitudes[peaks]) / np.min(magnitudes[valleys])
+    return np.array([peak_to_valley_ratio])
+
 
 def calculate_spectral_valley_depth_mean(magnitudes):
-        # https://doi.org/10.48550/arXiv.1506.04828
-        valleys, _ = find_peaks(-magnitudes)
-        if len(valleys) == 0:
-            return np.array([np.nan])
-        valley_depth_mean = np.mean(magnitudes[valleys])
-        return np.array([valley_depth_mean])
+    """
+    Calculate the mean of the spectral valley depths.
+
+    This function identifies valleys in the magnitude spectrum by finding peaks
+    in the negative of the magnitudes (indicating valleys) and computes the mean 
+    depth of these valleys. If no valleys are found, it returns NaN.
+
+    Parameter:
+    ---------
+        magnitudes (array-like)
+            A 1D array representing the magnitudes corresponding to each frequency component.
+
+    Returns:
+    -------
+        np.ndarray
+            Mean of the valley depths or NaN if no valleys are found.
+        
+    Reference:
+    ---------
+        - Ananthapadmanabha, T. v, Ramakrishnan, A. G., Sharma, S., & Anantha, J. (2015). 
+        Significance of the levels of spectral valleys with application to front/back 
+        distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    if len(valleys) == 0:
+        return np.array([np.nan])
+    valley_depth_mean = np.mean(magnitudes[valleys])
+    return np.array([valley_depth_mean])
 
 def calculate_spectral_valley_depth_std(magnitudes):
-        # https://doi.org/10.48550/arXiv.1506.04828
-        valleys, _ = find_peaks(-magnitudes)
-        if len(valleys) == 0:
-            return np.array([np.nan])
-        valley_depth_std = np.std(magnitudes[valleys])
-        return np.array([valley_depth_std])
+    """
+    Calculate the standard deviation of the spectral valley depths.
+
+    This function identifies valleys in the magnitude spectrum by finding peaks
+    in the negative of the magnitudes (indicating valleys) and computes the standard 
+    deviation of the valley depths. If no valleys are found, it returns NaN.
+
+    Parameter:
+    ---------
+        magnitudes (array-like)
+            A 1D array representing the magnitudes corresponding to each frequency component.
+
+    Returns:
+    --------
+        np.ndarray
+            Standard deviation of the valley depths or NaN if no valleys are found.
+            
+    Reference:
+    ---------
+        - Ananthapadmanabha, T. v, Ramakrishnan, A. G., Sharma, S., & Anantha, J. (2015). 
+        Significance of the levels of spectral valleys with application to front/back 
+        distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    if len(valleys) == 0:
+        return np.array([np.nan])
+    valley_depth_std = np.std(magnitudes[valleys])
+    return np.array([valley_depth_std])
 
 def calculate_spectral_valley_depth_variance(magnitudes):
-        # https://doi.org/10.48550/arXiv.1506.04828
-        valleys, _ = find_peaks(-magnitudes)
-        if len(valleys) == 0:
-            return np.array([np.nan])
-        valley_depth_variance = np.var(magnitudes[valleys])
-        return np.array([valley_depth_variance])
+    """
+    Calculate the variance of the spectral valley depths.
+
+    This function identifies valleys in the magnitude spectrum by finding peaks
+    in the negative of the magnitudes (indicating valleys) and computes the variance 
+    of these valleys' depths. If no valleys are found, it returns NaN.
+
+    Parameter:
+    ---------
+        magnitudes (array-like)
+            A 1D array representing the magnitudes corresponding to each frequency component.
+
+    Returns:
+    --------
+        np.ndarray
+            Variance of the valley depths or NaN if no valleys are found.
+            
+    Reference:
+    ---------
+        - Ananthapadmanabha, T. v, Ramakrishnan, A. G., Sharma, S., & Anantha, J. (2015). 
+        Significance of the levels of spectral valleys with application to front/back 
+        distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    if len(valleys) == 0:
+        return np.array([np.nan])
+    valley_depth_variance = np.var(magnitudes[valleys])
+    return np.array([valley_depth_variance])
 
 def calculate_spectral_valley_width_mode(magnitudes):
-        # https://doi.org/10.48550/arXiv.1506.04828
-        valleys, _ = find_peaks(-magnitudes)
-        if len(valleys) < 2:
-            return np.array([np.nan])
-        valley_widths = np.diff(valleys)
-        # valley_width_mode = mode(valley_widths).mode[0]
-        valley_width_mode = mode(valley_widths)[0]
-        return np.array([valley_width_mode])
+    """
+    Calculate the mode of the spectral valley widths.
+
+    This function identifies valleys in the magnitude spectrum by finding peaks
+    in the negative of the magnitudes. It then calculates the mode of the widths 
+    between consecutive valleys. If fewer than two valleys are found, it returns NaN.
+
+    Parameter:
+    ---------
+        magnitudes (array-like)
+            A 1D array representing the magnitudes corresponding to each frequency component.
+
+    Returns:
+    --------
+        np.ndarray
+            Mode of the valley widths or NaN if fewer than two valleys are found.
+    
+    Reference:
+    ---------
+        - Ananthapadmanabha, T. v, Ramakrishnan, A. G., Sharma, S., & Anantha, J. (2015). 
+        Significance of the levels of spectral valleys with application to front/back 
+        distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    if len(valleys) < 2:
+        return np.array([np.nan])
+    valley_widths = np.diff(valleys)
+    valley_width_mode = mode(valley_widths)[0]
+    return np.array([valley_width_mode])
 
 def calculate_spectral_valley_width_std(magnitudes):
-        # https://doi.org/10.48550/arXiv.1506.04828
-        valleys, _ = find_peaks(-magnitudes)
-        if len(valleys) < 2:
-            return np.array([np.nan])
-        valley_widths = np.diff(valleys)
-        valley_width_std = np.std(valley_widths)
-        return np.array([valley_width_std])
+    """
+    Calculate the standard deviation of the spectral valley widths.
+
+    This function identifies valleys in the magnitude spectrum by finding peaks
+    in the negative of the magnitudes and calculates the standard deviation of the 
+    widths between consecutive valleys. If fewer than two valleys are found, it returns NaN.
+
+    Parameter:
+    ----------
+        magnitudes (array-like)
+            A 1D array representing the magnitudes corresponding to each frequency component.
+
+    Returns:
+    --------
+        np.ndarray
+            Standard deviation of the valley widths or NaN if fewer than two valleys are found.
+            
+    Reference:
+    ---------
+        - Ananthapadmanabha, T. v, Ramakrishnan, A. G., Sharma, S., & Anantha, J. (2015). 
+        Significance of the levels of spectral valleys with application to front/back 
+        distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    if len(valleys) < 2:
+        return np.array([np.nan])
+    valley_widths = np.diff(valleys)
+    valley_width_std = np.std(valley_widths)
+    return np.array([valley_width_std])
+
 
 def calculate_spectral_subdominant_valley(magnitudes):
-        valleys, _ = find_peaks(-magnitudes)
-        if len(valleys) < 2:
-            return np.array([np.nan])
-        sorted_valleys = np.sort(magnitudes[valleys])
-        subdominant_valley = sorted_valleys[-2] if len(sorted_valleys) >= 2 else np.nan
-        return np.array([subdominant_valley])
+    """
+    Calculate the second-largest valley in the magnitude spectrum.
 
+    Parameter:
+    ----------
+        magnitudes (array-like)
+            A 1D array representing the magnitudes corresponding to each frequency component.
+
+    Returns:
+    ---------
+        np.array
+            An array containing the second-largest valley value or NaN if there are fewer than two valleys.
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    if len(valleys) < 2:
+        return np.array([np.nan])
+    sorted_valleys = np.sort(magnitudes[valleys])
+    subdominant_valley = sorted_valleys[-2] if len(sorted_valleys) >= 2 else np.nan
+    return np.array([subdominant_valley])
+    
 def calculate_spectral_valley_count(magnitudes):
-        # https://doi.org/10.48550/arXiv.1506.04828
-        valleys, _ = find_peaks(-magnitudes)
-        return np.array([len(valleys)])
+    """
+    Calculate the number of valleys in the magnitude spectrum.
+
+    Parameters:
+    magnitudes (array): Array of magnitude values from the spectrum.
+
+    Returns:
+    np.array: An array containing the number of valleys in the magnitude spectrum.
+    
+    Reference:
+    ---------
+        - Ananthapadmanabha, T. v, Ramakrishnan, A. G., Sharma, S., & Anantha, J. (2015). 
+        Significance of the levels of spectral valleys with application to front/back 
+        distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    return np.array([len(valleys)])
 
 def calculate_spectral_peak_broadness(freqs, magnitudes):
-        # https://terpconnect.umd.edu/~toh/spectrum/PeakFindingandMeasurement.htm
-        peaks, _ = find_peaks(magnitudes)
-        if len(peaks) < 2:
-            return np.array([np.nan])
-        peak_widths = np.diff(peaks)
-        peak_broadness = np.mean(peak_widths)
-        return np.array([peak_broadness])
+    """
+    Calculate the average distance between peaks in the magnitude spectrum, indicating peak broadness.
+
+    Parameters:
+    ----------
+        freqs (array)
+            Array of frequency values.
+        magnitudes (array)
+            Array of magnitude values from the spectrum.
+
+    Returns:
+    --------
+        np.array
+            An array containing the average distance between peaks or NaN if there are fewer than two peaks.
+                
+        
+    Reference:
+    ----------
+        - https://terpconnect.umd.edu/~toh/spectrum/PeakFindingandMeasurement.htm
+    """
+    peaks, _ = find_peaks(magnitudes)
+    if len(peaks) < 2:
+        return np.array([np.nan])
+    peak_widths = np.diff(peaks)
+    peak_broadness = np.mean(peak_widths)
+    return np.array([peak_broadness])
 
 def calculate_spectral_valley_broadness(freqs, magnitudes):
-        # https://doi.org/10.48550/arXiv.1506.04828
-        valleys, _ = find_peaks(-magnitudes)
-        if len(valleys) < 2:
-            return np.array([np.nan])
-        valley_widths = np.diff(valleys)
-        valley_broadness = np.mean(valley_widths)
-        return np.array([valley_broadness])
+    """
+    Calculate the average distance between valleys in the magnitude spectrum, indicating valley broadness.
 
-def calculate_frequency_variance(freqs, magnitudes):
-        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
-        mean_freq = np.sum(freqs * magnitudes) / np.sum(magnitudes)
-        variance = np.sum(((freqs - mean_freq) ** 2) * magnitudes) / np.sum(magnitudes)
-        return np.array([variance])
+    Parameters:
+    -----------
+        freqs (array)
+            Array of frequency values.
+        magnitudes (array)
+            Array of magnitude values from the spectrum.
 
-def calculate_frequency_std(freqs, magnitudes):
-        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
-        mean_freq = np.sum(freqs * magnitudes) / np.sum(magnitudes)
-        variance = np.sum(((freqs - mean_freq) ** 2) * magnitudes) / np.sum(magnitudes)
-        std_dev = np.sqrt(variance)
-        return np.array([std_dev])
+    Returns:
+    --------
+        np.array
+            An array containing the average distance between valleys or NaN if there are fewer than two valleys.
+        
+    Reference:
+    ---------
+        - Ananthapadmanabha, T. v, Ramakrishnan, A. G., Sharma, S., & Anantha, J. (2015). 
+        Significance of the levels of spectral valleys with application to front/back 
+        distinction of vowel sounds. 2. https://arxiv.org/abs/1506.04828v2
+    """
+    valleys, _ = find_peaks(-magnitudes)
+    if len(valleys) < 2:
+        return np.array([np.nan])
+    valley_widths = np.diff(valleys)
+    valley_broadness = np.mean(valley_widths)
+    return np.array([valley_broadness])
 
-def calculate_frequency_range(freqs):
-        # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
-        freq_range = np.max(freqs) - np.min(freqs)
-        return np.array([freq_range])
+def calculate_spectral_range(freqs):
+    """
+    Calculate the range of frequencies in the spectrum.
 
-def calculate_frequency_trimmed_mean(freqs, magnitudes, trim_percent=0.1):
+    Parameters:
+    -----------
+        freqs (array)
+            Array of frequency values.
+
+    Returns:
+    --------
+        np.array
+            An array containing the range of frequencies.
+            
+    Reference
+    ---------
+        - Galar, D., & Kumar, U. (2017). Preprocessing and Features. EMaintenance, 129–177. 
+        https://doi.org/10.1016/B978-0-12-811153-6.00003-8
+    """
+    freq_range = np.max(freqs) - np.min(freqs)
+    return np.array([freq_range])
+
+def calculate_spectral_trimmed_mean(freqs, magnitudes, trim_percent=0.1):
         # https://doi.org/10.1016/B978-0-12-811153-6.00003-8
         sorted_indices = np.argsort(magnitudes)
         lower_limit = int(trim_percent * len(magnitudes))

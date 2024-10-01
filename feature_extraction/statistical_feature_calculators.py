@@ -1040,8 +1040,6 @@ def calculate_zero_crossings( signal):
         ----------
             - Myroniv, B., Wu, C.-W., Ren, Y., Christian, A., Bajo, E., & Tseng, 
             Y.-C. (2017). Analyzing User Emotions via Physiology Signals. https://www.researchgate.net/publication/323935725
-            - Sharma, G., Umapathy, K., & Krishnan, S. (2020). Trends in audio signal feature extraction methods.
-            Applied Acoustics, 158, 107020. https://doi.org/10.1016/J.APACOUST.2019.107020
             - Purushothaman, G., & Vikas, · Raunak. (2018). Identification of a feature selection
             based pattern recognition scheme for finger movement recognition from multichannel EMG
             signals. Australasian Physical & Engineering Sciences in Medicine, 41, 549–559. 
@@ -2844,6 +2842,8 @@ def calculate_zero_crossing_rate(signal):
         Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
         Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
         Zenodo. https://doi.org/10.5281/zenodo.11192913
+        - Sharma, G., Umapathy, K., & Krishnan, S. (2020). Trends in audio signal feature extraction methods.
+        Applied Acoustics, 158, 107020. https://doi.org/10.1016/J.APACOUST.2019.107020
     """
     zero_crossings = np.where(np.diff(np.signbit(signal)))[0]
     return len(zero_crossings) / len(signal)
@@ -3218,3 +3218,27 @@ def calculate_conditional_entropy(self, signal):
         
         """
         pass
+    
+    
+def calculate_mean_to_variance(signal):
+    """
+    Calculates the ratio of mean to variance of the signal. This feature may detect both
+    defective and normal signal. 
+    
+    Parameters:
+    ----------
+    signal : array-like
+        The input time series.
+        
+    Returns:
+    -------
+    float:
+        The mean to variance ratio
+        
+    Reference:
+    ---------
+        - Galar, D., & Kumar, U. (2017). Preprocessing and Features. EMaintenance, 129–177. 
+        https://doi.org/10.1016/B978-0-12-811153-6.00003-8
+    
+    """
+    return np.mean(signal) / np.var(signal)
