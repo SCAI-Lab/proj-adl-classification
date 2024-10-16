@@ -65,35 +65,6 @@ def calculate_spectral_variance(freqs, magnitudes):
         mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
         spectral_variance = np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes)
         return np.array([spectral_variance])
-    
-# def calculate_spectral_standard_deviation(freqs, magnitudes):
-#     """
-#     Calculates the spectral standard deviation of the given spectrum. This is another form of spectral spread.
-    
-#     It is a measure of the spread of the spectrum around its centroid.It quantifies how much the frequencies in the spectrum deviate 
-#     from the spectral centroid.
-    
-#     Parameters:
-#         ----------
-#         freqs : numpy.array
-#             An array of frequencies corresponding to the spectrum bins.
-#         magnitudes : numpy.array
-#             An array of magnitude values of the spectrum at the corresponding frequencies.
-
-#         Returns:
-#         -------
-#         numpy.array
-#             An array containing the calculated spectral standard deviation.
-    
-#     Reference:
-#     ----------
-#         - Giannakopoulos, T., & Pikrakis, A. (2014). Audio Features. Introduction to Audio Analysis, 
-#         59–103. https://doi.org/10.1016/B978-0-08-099388-1.00004-2
-    
-#     """
-#     mean_frequency = calculate_spectral_centroid(freqs, magnitudes)
-#     spectral_standard_deviation = np.sqrt(np.sum(((freqs - mean_frequency) ** 2) * magnitudes) / np.sum(magnitudes))
-#     return np.array([spectral_standard_deviation])
 
 def calculate_spectral_skewness(freqs, magnitudes):
         """
@@ -121,7 +92,7 @@ def calculate_spectral_skewness(freqs, magnitudes):
             TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
         mu1 = calculate_spectral_centroid(freqs, magnitudes, order=1)
-        mu2 = calculate_spectral_centroid(freqs, magnitudes, order=2)
+        mu2 = calculate_spectral_bandwidth(freqs, magnitudes, order=2)
         spectral_skewness = np.sum(magnitudes * (freqs - mu1) ** 3) / (np.sum(magnitudes) * mu2 ** 3)
         return spectral_skewness
 
@@ -153,7 +124,7 @@ def calculate_spectral_kurtosis(freqs, magnitudes):
             TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
         """
         mu1 = calculate_spectral_centroid(freqs, magnitudes, order=1)
-        mu2 = calculate_spectral_centroid(freqs, magnitudes, order=2)
+        mu2 = calculate_spectral_bandwidth(freqs, magnitudes, order=2)
         spectral_kurtosis = np.sum(magnitudes * (freqs - mu1) ** 4) / (np.sum(magnitudes) * mu2 ** 4)
         return spectral_kurtosis
 
@@ -432,7 +403,10 @@ def calculate_spectral_contrast(freqs, psd, f_bands):
         ----------
             - Music type classification by spectral contrast feature. (n.d.). Retrieved September 16,
             2024, from https://www.researchgate.net/publication/313484983_Music_type_classification_by_spectral_contrast_feature
-            - McFee et al., 2024, https://zenodo.org/badge/latestdoi/6309729
+            - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+            Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+            Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+            Zenodo. https://doi.org/10.5281/zenodo.11192913
         """
         feats = []
         for f_band in f_bands:
@@ -477,7 +451,10 @@ def calculate_spectral_bandwidth(freqs, magnitudes, order):
         
         References:
         -----------
-            - Librosa Library Documentation: https://zenodo.org/badge/latestdoi/6309729
+            - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+            Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+            Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+            Zenodo. https://doi.org/10.5281/zenodo.11192913
             - Giannakopoulos, T., & Pikrakis, A. (2014). Audio Features. Introduction to Audio Analysis, 
             59–103. https://doi.org/10.1016/B978-0-08-099388-1.00004-2
         """
@@ -514,7 +491,10 @@ def calculate_spectral_absolute_deviation(freqs, magnitudes, order=1):
             
         References:
         -----------
-            - Librosa Library Documentation: https://zenodo.org/badge/latestdoi/6309729
+            - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+            Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+            Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+            Zenodo. https://doi.org/10.5281/zenodo.11192913
         """
         # The even order spectral absolute deviation is the same as spectral bandwidth of the same order
         normalized_magnitudes = magnitudes / np.sum(magnitudes)
@@ -592,13 +572,16 @@ def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85):
 
     Parameters:
     -----------
-    freqs : numpy.ndarray
-        Array of frequencies corresponding to the frequency components of the signal.
-    magnitudes : numpy.ndarray
-        Array of magnitudes (or power) corresponding to the frequencies.
+    freqs : array-like
+        Array of frequencies corresponding to the magnitude spectrum of the signal.
+        
+    magnitudes : array-like
+        Array of magnitudes corresponding to the frequency spectrum of the signal.
+        
     roll_percent : float, optional
-        The percentage of total spectral energy below the rolloff point. Default is 0.85 (85%).
-
+        The percentage of the total spectral energy below which the roll-on 
+        frequency is calculated. The default is 0.85 (85%).
+        
     Returns:
     --------
     numpy.ndarray
@@ -790,15 +773,55 @@ def calculate_spectral_winsorized_mean(freqs, magnitudes, limits=(0.05, 0.95)):
 
 
 def calculate_total_harmonic_distortion(signal, fs, harmonics=5):
-        # 10.1109/TCOMM.2011.061511.100749
-        # https://zenodo.org/badge/latestdoi/6309729
-        f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-        fundamental_freq = np.mean(f0)
-        harmonic_frequencies = [(i+1) * fundamental_freq for i in range(harmonics)]
-        harmonic_power = sum([np.sum(np.abs(np.fft.rfft(signal * np.sin(2 * np.pi * harmonic_freq * np.arange(len(signal)) / fs)))) for harmonic_freq in harmonic_frequencies])
-        total_power = np.sum(np.abs(np.fft.rfft(signal))**2)
-        thd = harmonic_power / total_power
-        return np.array([thd])
+    """
+    Calculate the Total Harmonic Distortion (THD) of a signal.
+    
+    THD is a measure of the distortion in a signal caused by the presence of 
+    harmonics (integer multiples of the fundamental frequency). It is calculated 
+    as the square root of the ratio of harmonic power to the fundamental power.
+    
+    Parameters:
+    -----------
+    signal : array-like
+        The input signal for which the THD is being calculated.
+        
+    fs : int or float
+        The sampling frequency of the input signal, in Hz.
+        
+    harmonics : int, optional
+        The number of harmonic frequencies to consider for THD calculation.
+        Default is 5.
+    
+    Returns:
+    --------
+    thd : float
+    The total harmonic distortion of the input signal, as a ratio of harmonic 
+    power to the fundamental power.
+    References
+    ----------
+        - Blagouchine, I. v., & Moreau, E. (2011). Analytic method for the computation 
+        of the total harmonic distortion by the cauchy method of residues. IEEE Transactions 
+        on Communications, 59(9), 2478–2491. https://doi.org/10.1109/TCOMM.2011.061511.100749
+        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+        Zenodo. https://doi.org/10.5281/zenodo.11192913
+    """
+    # Estimate the fundamental frequency (f0)
+    f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
+    fundamental_freq = np.mean(f0)
+    fft_spectrum = np.fft.rfft(signal)
+    freqs = np.fft.rfftfreq(len(signal), 1/fs)
+    fundamental_idx = np.argmin(np.abs(freqs - fundamental_freq))
+    fundamental_power = np.abs(fft_spectrum[fundamental_idx])**2 # power of the fundamental frequency
+    
+    # Harmonic power (sum of harmonics' power starting from the 2nd harmonic)
+    harmonic_power = 0
+    for i in range(2, harmonics+1):  # Start from the second harmonic 
+        harmonic_idx = np.argmin(np.abs(freqs - i * fundamental_freq))
+        harmonic_power += np.abs(fft_spectrum[harmonic_idx])**2
+    thd = np.sqrt(harmonic_power / fundamental_power)
+    return np.array([thd])
 
 def calculate_inharmonicity(signal, fs):
     """
@@ -819,19 +842,55 @@ def calculate_inharmonicity(signal, fs):
     return np.array([inharmonicity])
 
 def calculate_tristimulus(magnitudes):
-        # https://zenodo.org/badge/latestdoi/6309729
-        if len(magnitudes) < 3:
-            return np.array([np.nan, np.nan, np.nan])
-        t1 = magnitudes[0] / np.sum(magnitudes)
-        t2 = magnitudes[1] / np.sum(magnitudes)
-        t3 = np.sum(magnitudes[2:]) / np.sum(magnitudes)
-        return np.array([t1, t2, t3])
+    """
+    Reference:
+    ----------
+        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+        Zenodo. https://doi.org/10.5281/zenodo.11192913
+    """
+    if len(magnitudes) < 3:
+        return np.array([np.nan, np.nan, np.nan])
+    t1 = magnitudes[0] / np.sum(magnitudes)
+    t2 = magnitudes[1] / np.sum(magnitudes)
+    t3 = np.sum(magnitudes[2:]) / np.sum(magnitudes)
+    return np.array([t1, t2, t3])
 
-def calculate_spectral_rollon(freqs, magnitudes, roll_percent=0.85):
-        # https://doi.org/10.1016/j.softx.2020.100456
-        cumulative_magnitudes = np.cumsum(magnitudes)
-        rollon_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
-        return np.array([rollon_frequency])
+def calculate_spectral_rollon(freqs, magnitudes, roll_percent=0.05):
+    """
+    Calculate the spectral roll-on point of a signal.
+    
+    The spectral roll-on is the frequency below which a specified percentage 
+    (e.g., 5%) of the total spectral magnitude is contained. It is used to 
+    determine the low-frequency cutoff for a given signal's spectrum.
+    
+    Parameters:
+    -----------
+    freqs : array-like
+        Array of frequencies corresponding to the magnitude spectrum of the signal.
+        
+    magnitudes : array-like
+        Array of magnitudes corresponding to the frequency spectrum of the signal.
+        
+    roll_percent : float, optional
+        The percentage of the total spectral energy below which the roll-on 
+        frequency is calculated. The default is 0.05 (5%).
+    
+    Returns:
+    --------
+    rollon_frequency : float
+        The frequency at which the cumulative magnitude reaches the specified 
+        percentage of the total energy (the roll-on point).
+    
+    Reference:
+    ----------
+        - Barandas, M., Folgado, D., Fernandes, L., Santos, S., Abreu, M., Bota, P., Liu, H., Schultz, T., & Gamboa, 
+        H. (2020). TSFEL: Time Series Feature Extraction Library. SoftwareX, 11. https://doi.org/10.1016/j.softx.2020.100456
+    """
+    cumulative_magnitudes = np.cumsum(magnitudes)
+    rollon_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
+    return np.array([rollon_frequency])
 
 def calculate_spectral_hole_count(magnitudes, threshold=0.05):
         # https://doi.org/10.1103/PhysRevA.104.063111
@@ -850,40 +909,109 @@ def calculate_spectral_variability(magnitudes):
         return np.array([variability])
 
 def calculate_spectral_spread_ratio(freqs, magnitudes, reference_value=1.0):
-        # https://doi.org/10.1016/j.softx.2020.100456
-        spread = np.sqrt(np.sum((freqs - np.mean(freqs))**2 * magnitudes) / np.sum(magnitudes))
-        spread_ratio = spread / reference_value
-        return np.array([spread_ratio])
+    """
+    Calculate the spectral spread ratio by normalizing the spectral bandwidth (spread) by a reference value.
+
+    Parameters:
+    -----------
+    freqs : array-like
+        Array of frequencies corresponding to the magnitude spectrum of the signal.
+        
+    magnitudes : array-like
+        Array of magnitudes corresponding to the frequency spectrum of the signal.
+        
+    reference_value: float, optional (default=1.0)
+        The reference value to normalize the spectral spread (bandwidth).
+        
+    Return:
+    ------
+    spread_ratio: np.ndarray
+        Normalized spectral spread ratio.
+    """ 
+    # https://doi.org/10.1016/j.softx.2020.100456
+    spread = calculate_spectral_bandwidth(freqs, magnitudes, order = 2)
+    spread_ratio = spread / reference_value
+    return np.array([spread_ratio])
 
 def calculate_spectral_skewness_ratio(freqs, magnitudes, reference_value=1.0):
-        # https://doi.org/10.1016/j.softx.2020.100456
-        mean_freq = np.mean(freqs)
-        skewness = np.sum((freqs - mean_freq)**3 * magnitudes) / (len(freqs) * (np.std(freqs)**3))
-        skewness_ratio = skewness / reference_value
-        return np.array([skewness_ratio])
+    """
+    Calculate the spectral skewness ratio by normalizing the spectral bandwidth (spread) by a reference value.
+
+    Parameters:
+    -----------
+    freqs : array-like
+        Array of frequencies corresponding to the magnitude spectrum of the signal.
+        
+    magnitudes : array-like
+        Array of magnitudes corresponding to the frequency spectrum of the signal.
+        
+    reference_value: float, optional (default=1.0)
+        The reference value to normalize the spectral skewness.
+        
+    Return:
+    ------
+    skewness_ratio: np.ndarray
+        Normalized spectral skewness ratio.
+    """ 
+    # https://doi.org/10.1016/j.softx.2020.100456
+    skewness = calculate_spectral_skewness(freqs, magnitudes)
+    skewness_ratio = skewness / reference_value
+    return np.array([skewness_ratio])
 
 def calculate_spectral_kurtosis_ratio(freqs, magnitudes, reference_value=1.0):
-        # https://doi.org/10.1016/j.softx.2020.100456
-        mean_freq = np.mean(freqs)
-        kurtosis = np.sum((freqs - mean_freq)**4 * magnitudes) / (len(freqs) * (np.std(freqs)**4)) - 3
-        kurtosis_ratio = kurtosis / reference_value
-        return np.array([kurtosis_ratio])
+    """
+    Calculate the spectral kurtosis ratio by normalizing the spectral bandwidth (spread) by a reference value.
+
+    Parameters:
+    -----------
+    freqs : array-like
+        Array of frequencies corresponding to the magnitude spectrum of the signal.
+        
+    magnitudes : array-like
+        Array of magnitudes corresponding to the frequency spectrum of the signal.
+        
+    reference_value: float, optional (default=1.0)
+        The reference value to normalize the spectral kurtosis.
+        
+    Return:
+    ------
+    kurtosis_ratio: np.ndarray
+        Normalized spectral kurtosis ratio.
+    """ 
+    # https://doi.org/10.1016/j.softx.2020.100456
+    kurtosis = calculate_spectral_kurtosis(freqs, magnitudes)
+    kurtosis_ratio = kurtosis / reference_value
+    return np.array([kurtosis_ratio])
 
 def calculate_spectral_tonal_power_ratio(signal):
-        # https://zenodo.org/badge/latestdoi/6309729
-        harmonic_power = np.sum(librosa.effects.harmonic(signal)**2)
-        total_power = np.sum(signal**2)
-        tonal_power_ratio = harmonic_power / total_power
-        return np.array([tonal_power_ratio])
+    """
+    Reference:
+    ----------
+        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+        Zenodo. https://doi.org/10.5281/zenodo.11192913
+    """
+    harmonic_power = np.sum(librosa.effects.harmonic(signal)**2)
+    total_power = np.sum(signal**2)
+    tonal_power_ratio = harmonic_power / total_power
+    return np.array([tonal_power_ratio])
 
 def calculate_spectral_noise_to_harmonics_ratio(signal):
-        # https://zenodo.org/badge/latestdoi/6309729
-        harmonic_part = librosa.effects.harmonic(signal)
-        noise_part = signal - harmonic_part
-        noise_energy = np.sum(noise_part**2)
-        harmonic_energy = np.sum(harmonic_part**2)
-        noise_to_harmonics_ratio = noise_energy / harmonic_energy
-        return np.array([noise_to_harmonics_ratio])
+    """
+    Reference:
+    ----------
+        - McFee, B., Matt McVicar, Daniel Faronbi, Iran Roman, Matan Gover, Stefan Balke, Scott Seyfarth, Ayoub Malek, 
+        Colin Raffel, Vincent Lostanlen, Benjamin van Niekirk, Dana Lee, Frank Cwitkowitz, Frank Zalkow, Oriol Nieto, 
+        Dan Ellis, Jack Mason, Kyungyun Lee, Bea Steers, … Waldir Pimenta. (2024). librosa/librosa: 0.10.2.post1 (0.10.2.post1). 
+        Zenodo. https://doi.org/10.5281/zenodo.11192913
+    """
+    harmonic_part = librosa.effects.harmonic(signal)
+    noise_part = signal - harmonic_part
+    noise_energy = np.sum(noise_part**2)
+    harmonic_energy = np.sum(harmonic_part**2)
+    noise_to_harmonics_ratio = noise_energy / harmonic_energy
+    return np.array([noise_to_harmonics_ratio])
 
     #def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal):
         # https://zenodo.org/badge/latestdoi/6309729
@@ -981,17 +1109,68 @@ def calculate_spectral_frequency_above_peak(freqs, magnitudes):
     frequency_above_peak = freqs[min(len(freqs) - 1, peak_index + 1)]
     return np.array([frequency_above_peak])
 
-def calculate_spectral_cumulative_frequency(freqs, magnitudes, threshold): 
-        # https://doi.org/10.48550/arXiv.0901.3708
-        cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
-        frequency = freqs[np.where(cumulative_power >= threshold)[0][0]]
-        return np.array([frequency])
+    
+def calculate_frequency_cumulative_power_above(freqs, magnitudes, threshold): 
+    """
+    Calculate the frequency at which the cumulative power reaches or exceeds a given threshold.
 
-def calculate_spectral_cumulative_frequency_above(freqs, magnitudes, threshold):
-        # https://doi.org/10.48550/arXiv.0901.3708
-        cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
-        frequency = freqs[np.where(cumulative_power <= threshold)[-1][-1]]
-        return np.array([frequency])
+    This function computes the cumulative sum of magnitudes (spectral power) normalized 
+    to the total power. It identifies the first frequency where the cumulative power reaches 
+    or surpasses the specified threshold.
+
+    Parameters:
+    -----------
+    freqs : np.ndarray
+        Array of frequencies corresponding to the spectral data.
+    magnitudes : np.ndarray
+        Array of magnitudes (power) at each frequency.
+    threshold : float
+        A value between 0 and 1 indicating the cumulative power threshold (e.g., 0.5 for 50%).
+
+    Returns:
+    --------
+    np.ndarray
+        An array containing the frequency at which the cumulative power meets or exceeds the threshold.
+    
+    Reference:
+    ---------
+        - Lee, S.-C., & Peters, R. D. (2009). A New Look at an Old Tool-the Cumulative Spectral Power 
+        of Fast-Fourier Transform Analysis. https://arxiv.org/abs/0901.3708v1
+    """
+    cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
+    frequency = freqs[np.where(cumulative_power >= threshold)[0][0]]
+    return np.array([frequency])
+    
+def calculate_frequency_cumulative_power_below(freqs, magnitudes, threshold):
+    """
+    Calculate the frequency below which the cumulative power stays within a given threshold.
+
+    This function computes the cumulative sum of magnitudes (spectral power) normalized 
+    to the total power. It identifies the last frequency where the cumulative power remains 
+    below or equal to the specified threshold.
+
+    Parameters:
+    -----------
+    freqs : np.ndarray
+        Array of frequencies corresponding to the spectral data.
+    magnitudes : np.ndarray
+        Array of magnitudes (power) at each frequency.
+    threshold : float
+        A value between 0 and 1 indicating the cumulative power threshold (e.g., 0.8 for 80%).
+
+    Returns:
+    --------
+    np.ndarray
+        An array containing the frequency at which the cumulative power stays below or equals the threshold.
+
+    Reference:
+    ---------
+        - Lee, S.-C., & Peters, R. D. (2009). A New Look at an Old Tool-the Cumulative Spectral Power 
+        of Fast-Fourier Transform Analysis. https://arxiv.org/abs/0901.3708v1
+    """
+    cumulative_power = np.cumsum(magnitudes) / np.sum(magnitudes)
+    frequency = freqs[np.where(cumulative_power <= threshold)[-1][-1]]
+    return np.array([frequency])
 
 def calculate_spectral_change_vector_magnitude(magnitudes):
         """
@@ -1352,13 +1531,52 @@ def calculate_harmonic_product_spectrum(magnitudes):
         return np.array([np.sum(hps)])
 
 def calculate_smoothness(magnitudes):
-        # https://doi.org/10.3390/rs13163196
-        smoothness = np.sum(np.diff(magnitudes)**2)
-        return np.array([smoothness])
+    """
+    Calculate the smoothness of a signal based on the magnitude values.
+
+    Smoothness is determined as the sum of the squared differences 
+    between consecutive magnitudes. This provides a measure of how much 
+    the signal changes between successive points, which can be used to 
+    quantify the stability or fluctuation of the signal over time.
+
+    Parameters:
+    ----------
+    magnitudes (numpy.ndarray):
+        A 1D array of magnitudes (e.g., signal amplitude) from which smoothness is to be calculated.
+
+    Returns:
+    -------
+    numpy.ndarray:
+        A 1D array containing the calculated smoothness value.
+        
+    https://doi.org/10.3390/rs13163196
+    """
+    smoothness = np.sum(np.diff(magnitudes)**2)
+    return np.array([smoothness])
+
 
 def calculate_roughness(magnitudes):
-        roughness = np.sum(np.abs(np.diff(magnitudes)))
-        return np.array([roughness])
+    """
+    Calculate the roughness of a signal based on the magnitude values.
+
+    Roughness is determined as the sum of the absolute differences 
+    between consecutive magnitudes. This provides a measure of the 
+    overall variation or "roughness" of the signal, which reflects how 
+    irregular or jagged the signal is over time.
+
+    Parameters:
+    -----------
+    magnitudes (numpy.ndarray): 
+        A 1D array of magnitudes (e.g., signal amplitude) from which roughness is to be calculated.
+
+    Returns:
+    --------
+    numpy.ndarray: 
+        A 1D array containing the calculated roughness value.
+    """
+    roughness = np.sum(np.abs(np.diff(magnitudes)))
+    return np.array([roughness])
+
     
 
 # features haven't been implemented yet and cannot find reference

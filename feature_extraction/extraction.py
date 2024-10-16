@@ -747,18 +747,17 @@ def calculate_frequency_features(self, signal, signal_name):
         feats.extend(calculate_spectral_frequency_above_peak(freqs_spectrum, spectrum_magnitudes))
         feats_names.append(f"{signal_name}_spectral_frequency_above_peak")
 
-        # Spectral Cumulative Frequency Below 50% Power: The frequency below which 50% of the spectral power is contained.
-        feats.extend(calculate_spectral_cumulative_frequency(freqs_spectrum, spectrum_magnitudes, 0.5))
-        feats_names.append(f"{signal_name}_spectral_cumulative_frequency_below_50_percent_power")
+        # Spectral Frequency Cumulative Power Above 50%: The frequency at which the cumulative power reaches or exceeds 50% threshold.
+        feats.extend(calculate_frequency_cumulative_power_above(freqs_spectrum, spectrum_magnitudes, 0.5))
+        feats_names.append(f"{signal_name}_frequency_cumulative_power_above_50%")
 
-        # Spectral Cumulative Frequency Below 75% Power: The frequency below which 75% of the spectral power is contained.
-        # https://doi.org/10.48550/arXiv.0901.3708
-        feats.extend(calculate_spectral_cumulative_frequency(freqs_spectrum, spectrum_magnitudes, 0.75))
-        feats_names.append(f"{signal_name}_spectral_cumulative_frequency_below_75_percent_power")
+        # Spectral Frequency Cumulative Power Above 75%: The frequency at which the cumulative power reaches or exceeds 75% threshold.
+        feats.extend(calculate_frequency_cumulative_power_above(freqs_spectrum, spectrum_magnitudes, 0.75))
+        feats_names.append(f"{signal_name}_frequency_cumulative_power_above_75%")
 
         # Spectral Cumulative Frequency Above 75% Power: The frequency above which 75% of the spectral power is contained.
-        feats.extend(calculate_spectral_cumulative_frequency_above(freqs_spectrum, spectrum_magnitudes, 0.75))
-        feats_names.append(f"{signal_name}_spectral_cumulative_frequency_above_75_percent_power")
+        feats.extend(calculate_frequency_cumulative_power_below(freqs_spectrum, spectrum_magnitudes, 0.75))
+        feats_names.append(f"{signal_name}_spectral_cumulative_frequency_below_75_percent_power")
 
         # Spectral Change Vector Magnitude: The magnitude of change in the spectral features over time.
         feats.extend(calculate_spectral_change_vector_magnitude(spectrum_magnitudes))

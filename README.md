@@ -265,6 +265,7 @@ Number| Feature    | Reason |
 11|calculate_third_quartile | calculate_percentile(signal, percentiles=[25, 50, 75]) returns the first, second, and third quartiles |
 14| calculate_spectral_entropy_shift|Same implementation as calculate_spectral_entropy but with spectrum_magnitudes as argument and not psd|
 13| calculate_spectral_spread_shift| Same spectral standard deviation
+14| calculate_spectral_variabiliity| It is not related to the reference provided
 
 
 ## Features that should be deleted
