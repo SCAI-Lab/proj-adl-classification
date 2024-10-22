@@ -270,9 +270,10 @@ Number| Feature    | Reason |
 
 ## Features that should be deleted
 Number| Feature    | Type | Reason|
-| -------- | ------- | ------- |
+| -------- | ------- | ------- | ------- |
 1| calculate_histogram_bins| statistical
 2| calculate_signal_magnitude_area|statistical
+3| calculate_spectral_hole_count| spectral | Spectral holes are typically of use in radio signals. Although the aim is to make this a very comprehensive toolbox, this feature is a little bit out of scope.
 
 
 ## Features in Tsfresh but not in SCAI toolbox

@@ -245,7 +245,7 @@ def calculate_peak_frequencies(freqs, psd, n_dom_freqs):
         ----------
         freqs:numpy.array
             An array of frequency values.
-        psd:numpy.array
+        psd: np.array
             An array of Power Spectral Density (PSD) values corresponding to the frequencies.
 
         Returns:
@@ -596,6 +596,7 @@ def calculate_spectral_rolloff(freqs, magnitudes, roll_percent=0.85):
     rolloff_frequency = np.min(freqs[np.where(cumulative_magnitudes >= roll_percent * cumulative_magnitudes[-1])])
     return np.array([rolloff_frequency])
 
+# TODO: check this implementation
 def calculate_harmonic_ratio(signal):
     """
     Calculate the harmonic ratio of a given signal.
@@ -1196,15 +1197,96 @@ def calculate_spectral_change_vector_magnitude(magnitudes):
         change_vector_magnitude = np.linalg.norm(np.diff(magnitudes))
         return np.array([change_vector_magnitude])
 
-def calculate_spectral_low_frequency_content(freqs, magnitudes, low_freq_threshold=300):
-        # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
-        low_freq_content = np.sum(magnitudes[freqs < low_freq_threshold])
-        return np.array([low_freq_content])
+def calculate_spectral_low_frequency_content(freqs, magnitudes, psd, method='fixed', threshold=300, percentile=50):
+    """
+    Calculate the low-frequency content in the spectral data using a dynamic or fixed threshold.
+    
+    Parameters:
+    ----------
+    freqs : np.ndarray
+        Array of frequencies corresponding to the spectral data.
+    magnitudes : np.ndarray
+        Array of magnitudes (power) at each frequency.
+    psd: np.array
+            An array of Power Spectral Density (PSD) values corresponding to the frequencies.
+    method: string
+        Method to determine the threshold ('fixed', 'mean', 'median', 'percentile').
+    threshold: float 
+        Fixed frequency threshold for 'fixed' method (default is 300 Hz).
+    percentile: float
+        Percentile value for 'percentile' method (default is 50, which is the median).
+    
+    Returns:
+    --------
+    low_freq_content: float
+        Sum of the magnitudes for frequencies below the dynamically chosen threshold.
+    """    
+    # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
+    # Determine the threshold based on the selected method
+    if method == 'fixed':
+        dynamic_threshold = threshold
+    elif method == 'mean':
+        dynamic_threshold = np.sum(freqs * magnitudes) / np.sum(magnitudes)  # Mean frequency
+    elif method == 'median':
+        cumulative_psd = np.cumsum(psd)
+        dynamic_threshold = freqs[np.searchsorted(cumulative_psd, cumulative_psd[-1] / 2)]  # Median frequency
+    elif method == 'percentile':
+        dynamic_threshold = np.percentile(freqs, percentile)  # Percentile-based threshold
+    else:
+        raise ValueError(f"Unknown method: {method}. Choose from 'fixed', 'mean', 'median', or 'percentile'.")
+    
+    # Calculate the sum of magnitudes for frequencies below the threshold
+    low_freq_content = np.sum(magnitudes[freqs < dynamic_threshold])
+    
+    return np.array([low_freq_content])
 
-def calculate_spectral_mid_frequency_content(freqs, magnitudes, mid_freq_range=(300, 3000)):
-        # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
-        mid_freq_content = np.sum(magnitudes[(freqs >= mid_freq_range[0]) & (freqs <= mid_freq_range[1])])
-        return np.array([mid_freq_content])
+
+def calculate_spectral_mid_frequency_content(freqs, magnitudes, psd, method='fixed', mid_freq_range=(300, 3000), percentile=50):
+    """
+    Calculate the mid-frequency content in the spectral data by summing the magnitudes 
+    in the specified or dynamically determined mid-frequency range.
+    
+    Parameters:
+    ----------
+    freqs : np.ndarray
+        Array of frequencies corresponding to the spectral data.
+    magnitudes : np.ndarray
+        Array of magnitudes (power) at each frequency.
+    psd: np.array
+            An array of Power Spectral Density (PSD) values corresponding to the frequencies.
+    method: string
+        Method to determine the threshold ('fixed', 'mean', 'median', 'percentile').
+    mid_freq_range: tuple
+        A tuple specifying the lower and upper bound of the mid-frequency range (default is 300 Hz to 3000 Hz).
+    percentile: float
+        Percentile value for 'percentile' method (default is 50, which is the median).
+    
+    Returns:
+    --------
+    mid_freq_content: float
+        Sum of the magnitudes for frequencies within the dynamically or fixed mid-frequency range.
+    """    
+    # Determine the mid-frequency range based on the selected method
+    if method == 'fixed':
+        dynamic_mid_freq_range = mid_freq_range
+    elif method == 'mean':
+        mean_freq = np.sum(freqs * magnitudes) / np.sum(magnitudes)  # Mean frequency
+        dynamic_mid_freq_range = (mean_freq * 0.5, mean_freq * 1.5)  # Use a factor around the mean frequency
+    elif method == 'median':
+        cumulative_psd = np.cumsum(psd)
+        median_freq = freqs[np.searchsorted(cumulative_psd, cumulative_psd[-1] / 2)]  # Median frequency
+        dynamic_mid_freq_range = (median_freq * 0.5, median_freq * 1.5)  # Factor around the median frequency
+    elif method == 'percentile':
+        lower_bound = np.percentile(freqs, percentile)
+        upper_bound = np.percentile(freqs, 100 - percentile)
+        dynamic_mid_freq_range = (lower_bound, upper_bound)
+    else:
+        raise ValueError(f"Unknown method: {method}. Choose from 'fixed', 'mean', 'median', or 'percentile'.")
+    
+    # Calculate the sum of magnitudes within the mid-frequency range
+    mid_freq_content = np.sum(magnitudes[(freqs >= dynamic_mid_freq_range[0]) & (freqs <= dynamic_mid_freq_range[1])])
+    
+    return mid_freq_content
 
 def calculate_spectral_peak_to_valley_ratio(magnitudes):
     """
