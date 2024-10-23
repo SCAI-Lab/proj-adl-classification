@@ -899,11 +899,6 @@ def calculate_spectral_hole_count(magnitudes, threshold=0.05):
         dips, _ = find_peaks(-magnitudes, height=-threshold)
         return np.array([len(dips)])
 
-def calculate_spectral_autocorrelation(magnitudes):
-        # https://doi.org/10.48550/arXiv.1702.00105
-        autocorrelation = np.correlate(magnitudes, magnitudes, mode='full')
-        return autocorrelation[autocorrelation.size // 2:]
-
 def calculate_spectral_variability(magnitudes):
         # https://doi.org/10.1016/j.dsp.2015.10.011
         variability = np.var(magnitudes)
@@ -1550,10 +1545,10 @@ def calculate_spectral_valley_broadness(freqs, magnitudes):
 
     Parameters:
     -----------
-        freqs (array)
-            Array of frequency values.
-        magnitudes (array)
-            Array of magnitude values from the spectrum.
+    freqs (array)
+        Array of frequency values.
+    magnitudes (array)
+        Array of magnitude values from the spectrum.
 
     Returns:
     --------
@@ -1605,12 +1600,42 @@ def calculate_spectral_trimmed_mean(freqs, magnitudes, trim_percent=0.1):
         return np.array([trimmed_mean])
     
 def calculate_harmonic_product_spectrum(magnitudes):
-        # 10.1109/MHS.2018.8886911
-        hps = np.copy(magnitudes)
-        for h in range(2, 5):
-            decimated = magnitudes[::h]
-            hps[:len(decimated)] *= decimated
-        return np.array([np.sum(hps)])
+    """
+    Calculate the sum of the Harmonic Product Spectrum (HPS) from the given magnitudes.
+
+    This function computes the HPS and returns its sum as a single scalar feature. It is often 
+    used as part of feature extraction pipelines in audio signal processing, 
+    particularly for pitch detection, speech/music classification, or speaker recognition.
+
+    Parameters:
+    -----------
+    magnitudes : numpy.array
+            An array of magnitude values of the spectrum at the corresponding frequencies.
+
+    Returns:
+    --------
+    float
+        A single scalar value representing the sum of the Harmonic Product Spectrum. 
+        This value reflects the overall strength of harmonic content in the input signal.
+        
+    References:
+    -----------
+        - Nhu, T. V., & Sawada, H. (2018). Intoning Speech Performance of the Talking Robot 
+        for Vietnamese Language Case. MHS 2018 - 2018 29th International Symposium on 
+        Micro-NanoMechatronics and Human Science. https://doi.org/10.1109/MHS.2018.8886911
+
+    Notes:
+    ------
+    - This function returns only the sum of the HPS, which is useful as a compact 
+    feature for tasks like classification or clustering.
+    - For more detailed analysis, you may want to retain the full HPS spectrum 
+    instead of just the sum.
+    """
+    hps = np.copy(magnitudes)
+    for h in range(2, 5):
+        decimated = magnitudes[::h]
+        hps[:len(decimated)] *= decimated
+    return np.array([np.sum(hps)])
 
 def calculate_smoothness(magnitudes):
     """
@@ -1624,7 +1649,7 @@ def calculate_smoothness(magnitudes):
     Parameters:
     ----------
     magnitudes (numpy.ndarray):
-        A 1D array of magnitudes (e.g., signal amplitude) from which smoothness is to be calculated.
+        A 1D array of magnitudes from which smoothness is to be calculated.
 
     Returns:
     -------
