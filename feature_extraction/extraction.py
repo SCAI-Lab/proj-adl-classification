@@ -730,6 +730,10 @@ def calculate_frequency_features(self, signal, signal_name):
         # Spectral Noise to Harmonics Ratio: The ratio of noise energy to harmonic energy.
         feats.extend(calculate_spectral_noise_to_harmonics_ratio(signal))
         feats_names.append(f"{signal_name}_spectral_noise_to_harmonics_ratio")
+        
+        # Spectral Harmonics to Noise Ratio: The ratio of harmonics to noise ratio
+        feats.extend(calculate_spectral_harmonics_to_noise_ratio(signal))
+        feats_names.append(f"{signal_name}_spectral_harmonics_to_noise_ratio")
 
         # Spectral Even to Odd Harmonic Energy Ratio: The ratio of even harmonic energy to odd harmonic energy.
         # feats.extend(calculate_spectral_even_to_odd_harmonic_energy_ratio(signal))
