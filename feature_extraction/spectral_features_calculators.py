@@ -657,7 +657,7 @@ def calculate_fundamental_frequency(signal):
 
     """
     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    return np.array([np.mean(f0)])
+    return np.array([np.median(f0)])
 
 def calculate_spectral_crest_factor(magnitudes):
     """
@@ -818,7 +818,7 @@ def calculate_total_harmonic_distortion(signal, fs, harmonics=5):
     """
     # Estimate the fundamental frequency (f0)
     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    fundamental_freq = np.mean(f0)
+    fundamental_freq = np.median(f0)
     fft_spectrum = np.fft.rfft(signal)
     freqs = np.fft.rfftfreq(len(signal), 1/fs)
     fundamental_idx = np.argmin(np.abs(freqs - fundamental_freq))
@@ -1188,7 +1188,7 @@ def calculate_spectral_even_to_odd_harmonic_energy_ratio(signal, fs):
     """
     # Estimate the fundamental frequency (f0)
     f0 = librosa.yin(signal, fmin=librosa.note_to_hz('C1'), fmax=librosa.note_to_hz('C8'))
-    fundamental_freq = np.mean(f0)
+    fundamental_freq = np.median(f0)
 
     # Generate lists of even and odd harmonics
     even_harmonics = [(2 * i + 2) * fundamental_freq for i in range(int(fs / (2 * fundamental_freq)))]
@@ -1463,7 +1463,7 @@ def calculate_spectral_mid_frequency_content(freqs, magnitudes, psd, method='fix
     # Calculate the sum of magnitudes within the mid-frequency range
     mid_freq_content = np.sum(magnitudes[(freqs >= dynamic_mid_freq_range[0]) & (freqs <= dynamic_mid_freq_range[1])])
     
-    return mid_freq_content
+    return np.array(mid_freq_content)
 
 def calculate_spectral_peak_to_valley_ratio(magnitudes):
     """

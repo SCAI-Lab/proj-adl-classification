@@ -684,7 +684,7 @@ def calculate_frequency_features(self, signal, signal_name):
         feats_names.append(f"{signal_name}_total_harmonic_distortion")
 
         # Inharmonicity: Measures the deviation of the frequencies of the overtones from whole number multiples of the fundamental frequency.
-        feats.extend(calculate_inharmonicity(signal, self.fs))
+        feats.extend(calculate_inharmonicity(signal,spectrum_magnitudes,  self.fs))
         feats_names.append(f"{signal_name}_inharmonicity")
 
         # Tristimulus: Measures the relative amplitude of the first few harmonics.
@@ -697,12 +697,12 @@ def calculate_frequency_features(self, signal, signal_name):
         feats_names.append(f"{signal_name}_spectral_rollon")
 
         # Spectral Hole Count: The number of significant dips in the spectrum.
-        feats.extend(calculate_spectral_hole_count(spectrum_magnitudes))
-        feats_names.append(f"{signal_name}_spectral_hole_count")
+        # feats.extend(calculate_spectral_hole_count(spectrum_magnitudes))
+        # feats_names.append(f"{signal_name}_spectral_hole_count")
 
-        # Spectral Auto-correlation: The auto-correlation of the spectrum.
-        feats.append(calculate_spectral_autocorrelation(spectrum_magnitudes))
-        feats_names.append(f"{signal_name}_spectral_autocorrelation")
+        # # Spectral Auto-correlation: The auto-correlation of the spectrum.
+        # feats.append(calculate_spectral_autocorrelation(spectrum_magnitudes))
+        # feats_names.append(f"{signal_name}_spectral_autocorrelation")
 
         # Spectral Variability: Measures the variability of the spectrum.
         feats.extend(calculate_spectral_variability(spectrum_magnitudes))
@@ -768,12 +768,12 @@ def calculate_frequency_features(self, signal, signal_name):
         feats_names.append(f"{signal_name}_spectral_change_vector_magnitude")
 
         # Spectral Low Frequency Content: The amount of energy in the low-frequency band.
-        feats.extend(calculate_spectral_low_frequency_content(freqs_spectrum, spectrum_magnitudes))
+        feats.extend(calculate_spectral_low_frequency_content(freqs_spectrum, spectrum_magnitudes, psd))
         # https://resources.pcb.cadence.com/blog/2022-an-overview-of-frequency-bands-and-their-applications
         feats_names.append(f"{signal_name}_spectral_low_frequency_content")
 
         # Spectral Mid Frequency Content: The amount of energy in the mid-frequency band.
-        feats.extend(calculate_spectral_mid_frequency_content(freqs_spectrum, spectrum_magnitudes))
+        feats.append(calculate_spectral_mid_frequency_content(freqs_spectrum, spectrum_magnitudes, psd))
         feats_names.append(f"{signal_name}_spectral_mid_frequency_content")
 
         # Spectral Peak-to-Valley Ratio: The ratio of peak to valley values in the spectrum.
